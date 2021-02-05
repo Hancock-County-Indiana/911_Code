@@ -1,11 +1,13 @@
 """
 #Created by Amanda Roberts on 01/08/2021.
-#Last edited 02/03/2021
+#Last edited 02/05/2021
 #Code is using Python 2.7 and ArcMap 10.7
-#Status: Runs but needs improvements
+#Status: Runs and produces expected result
 #
 #This code automates the fishbone analysis used by 911
 #Search "CHANGEME" to find blocks of code that may need file path updates
+#Highly recommended that forward slashes are used in file paths
+# to eliminate any Python weirdness with back slashes
 """
 
 #import needed packages
@@ -14,6 +16,7 @@ from arcpy import env
 import pandas as pd
 import os
 
+#make the fishbone process a function so it can be called in other code
 def fishbone(address, centerlines, outLoc):
     #make the address and centerline files feature layers so operations 
     #  can be performed on them
@@ -23,7 +26,7 @@ def fishbone(address, centerlines, outLoc):
     #determine the coordinate system of the files
     env.outputCoordinateSystem = arcpy.Describe(address + ".shp").spatialReference
     
-    #run make feature layer 
+    #run make feature layer so processes can be ran on them
     arcpy.MakeFeatureLayer_management(address + ".shp", addFC)
     arcpy.MakeFeatureLayer_management(centerlines + ".shp", centerFC)
     print("Created address and centerlines feature layers")
@@ -41,13 +44,13 @@ def fishbone(address, centerlines, outLoc):
         df = df.drop("OID", axis = 1)
     except: 
         print("OID does not exist in the table")
-    #CHANGEME
-    df.to_csv("C:\Users\jmilburn\Desktop\Fishbone_Test\geocodeTable.csv")
+    #CHANGEME to where you want the output to go
+    df.to_csv("C:/Users/jmilburn/Desktop/Fishbone_Test/geocodeTable.csv")
     print("Created csv file")
     
     #geocode the csv file using a premade address locator
-    #CHANGEME
-    addressLocator = "C:\Users\jmilburn\Desktop\Fishbone_Test\Hancock_RCL_CreateAddressLoc"
+    #CHANGEME to the location of your premade address locator
+    addressLocator = "C:/Users/jmilburn/Desktop/Fishbone_Test/Hancock_RCL_CreateAddressLoc"
     addressFields = "Street FULL_ADDRE;ZIP PROP_ZIP"
     geocodeResult = "geocodeResult1"
     
@@ -65,8 +68,8 @@ def fishbone(address, centerlines, outLoc):
     print("Created new file with the repaired geometry")
     
     #check for scores that aren't 100
-    #CHANGEME
-    fc = "C:\Users\jmilburn\Desktop\Fishbone_Test/repairResult1.shp"
+    #CHANGEME to the location of the output and repairResult1.shp
+    fc = "C:/Users/jmilburn/Desktop/Fishbone_Test/repairResult1.shp"
     fields = ["Score", "FID"]
     expression = "Score < 100"
     unmatchValues = arcpy.da.UpdateCursor(fc, fields, expression)
@@ -111,32 +114,34 @@ def fishbone(address, centerlines, outLoc):
     return
     
 #set up environment and local files
-#CHANGEME
+#CHANGEME to the location of your address points
 env.workspace = "C:/Users/jmilburn/AppData/Roaming/ESRI/Desktop10.7/"  + \
                 "ArcCatalog/gis-01.annex.hancock.sde/sde.DBO.Staging"
 env.overwriteOutput = True
 
 #get addresses and centerlines off the database
 inFeature = "sde.DBO.Hancock_Address_Points"
-#CHANGEME
-outLocation = "C:\Users\jmilburn\Desktop\Fishbone_Test"
+#CHANGEME to the location of where the output should go
+outLocation = "C:/Users/jmilburn/Desktop/Fishbone_Test"
 arcpy.FeatureClassToFeatureClass_conversion(inFeature, outLocation, "addressEDIT")
 print("Exported address points to local location")
 
+#CHANGEME and uncomment if centerlines are in a different location
+#env.workspace = "C:/Users/jmilburn/AppData/Roaming/ESRI/Desktop10.7/"  + \
+#                "ArcCatalog/gis-01.annex.hancock.sde/sde.DBO.Staging"
 inFeature2 = "sde.DBO.Hancock_Centerlines"
 arcpy.FeatureClassToFeatureClass_conversion(inFeature2, outLocation, "centerEDIT")
 print("Exported centerlines to local location")
 
 #Change the environment to the local location, allow overwriting,
 #and have the joined fields not include the table name
-#CHANGEME
-env.workspace = "C:\Users\jmilburn\Desktop\Fishbone_Test"
+#CHANGEME to the output location specified in outLocation
+env.workspace = "C:/Users/jmilburn/Desktop/Fishbone_Test"
 env.overwriteOutput = True
 env.qualifiedFieldNames = False
 
 #run the fishbone analysis
-#CHANGEME
-fishbone("addressEDIT", "centerEDIT", "C:\Users\jmilburn\Desktop\Fishbone_Test")
+fishbone("addressEDIT", "centerEDIT", outLocation)
 
 print("Exiting program")
 
