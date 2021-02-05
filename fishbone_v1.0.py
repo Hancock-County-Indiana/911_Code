@@ -45,12 +45,12 @@ def fishbone(address, centerlines, outLoc):
     except: 
         print("OID does not exist in the table")
     #CHANGEME to where you want the output to go
-    df.to_csv("C:/Users/jmilburn/Desktop/Fishbone_Test/geocodeTable.csv")
+    df.to_csv("C:/Users/aroberts/Documents/Code/dummy_data/fishbone/geocodeTable.csv")
     print("Created csv file")
     
     #geocode the csv file using a premade address locator
     #CHANGEME to the location of your premade address locator
-    addressLocator = "C:/Users/jmilburn/Desktop/Fishbone_Test/Hancock_RCL_CreateAddressLoc"
+    addressLocator = "C:/Users/aroberts/Documents/Code/dummy_data/fishbone/manualLoc"
     addressFields = "Street FULL_ADDRE;ZIP PROP_ZIP"
     geocodeResult = "geocodeResult1"
     
@@ -69,7 +69,7 @@ def fishbone(address, centerlines, outLoc):
     
     #check for scores that aren't 100
     #CHANGEME to the location of the output and repairResult1.shp
-    fc = "C:/Users/jmilburn/Desktop/Fishbone_Test/repairResult1.shp"
+    fc = "C:/Users/aroberts/Documents/Code/dummy_data/fishbone/repairResult1.shp"
     fields = ["Score", "FID"]
     expression = "Score < 100"
     unmatchValues = arcpy.da.UpdateCursor(fc, fields, expression)
@@ -111,24 +111,36 @@ def fishbone(address, centerlines, outLoc):
     #run xy to line
     arcpy.XYToLine_management("joinFile1.dbf", "outFish", "NewXField1", "NewYField1", "NewXField2", "NewYField2")
     print("XY to Line is complete")
+    
+    #delete temporary files
+    arcpy.Delete_management("centerEDIT.shp")
+    arcpy.Delete_management("addressdbfConvert1.csv")
+    arcpy.Delete_management("geocodeTable.csv")
+    arcpy.Delete_management("geocodeResult1.shp")
+    arcpy.Delete_management("repairResult1.shp")
+    arcpy.Delete_management("addressEDIT.shp")
+    arcpy.Delete_management("joinFile1.shp")
+    
     return
     
 #set up environment and local files
 #CHANGEME to the location of your address points
-env.workspace = "C:/Users/jmilburn/AppData/Roaming/ESRI/Desktop10.7/"  + \
+env.workspace = "C:/Users/aroberts/AppData/Roaming/ESRI/Desktop10.7/"  + \
                 "ArcCatalog/gis-01.annex.hancock.sde/sde.DBO.Staging"
 env.overwriteOutput = True
 
 #get addresses and centerlines off the database
+#CHANGEME if address points have a different name
 inFeature = "sde.DBO.Hancock_Address_Points"
 #CHANGEME to the location of where the output should go
-outLocation = "C:/Users/jmilburn/Desktop/Fishbone_Test"
+outLocation = "C:/Users/aroberts/Documents/Code/dummy_data/fishbone"
 arcpy.FeatureClassToFeatureClass_conversion(inFeature, outLocation, "addressEDIT")
 print("Exported address points to local location")
 
 #CHANGEME and uncomment if centerlines are in a different location
 #env.workspace = "C:/Users/jmilburn/AppData/Roaming/ESRI/Desktop10.7/"  + \
 #                "ArcCatalog/gis-01.annex.hancock.sde/sde.DBO.Staging"
+#CHANGEME if centerlines have a different name
 inFeature2 = "sde.DBO.Hancock_Centerlines"
 arcpy.FeatureClassToFeatureClass_conversion(inFeature2, outLocation, "centerEDIT")
 print("Exported centerlines to local location")
@@ -136,7 +148,7 @@ print("Exported centerlines to local location")
 #Change the environment to the local location, allow overwriting,
 #and have the joined fields not include the table name
 #CHANGEME to the output location specified in outLocation
-env.workspace = "C:/Users/jmilburn/Desktop/Fishbone_Test"
+env.workspace = "C:/Users/aroberts/Documents/Code/dummy_data/fishbone"
 env.overwriteOutput = True
 env.qualifiedFieldNames = False
 
@@ -144,7 +156,6 @@ env.qualifiedFieldNames = False
 fishbone("addressEDIT", "centerEDIT", outLocation)
 
 print("Exiting program")
-
 
 
 
