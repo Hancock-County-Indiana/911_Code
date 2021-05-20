@@ -1,0 +1,21 @@
+~~~~~~~~~~~~LAST UPDATED 05/19/2021 (MAY 19)~~~~~~~~~~~~~
+
+FILES
++fishbone.py
++fishschemameta.txt
++schemaBLANK.csv
++schemaFileFish.csv
+
+DESCRIPTIONS
+
+FILES
++fishbone.py - code file to perform the fishbone analysis
++fishschemameta.txt - metadata file explaining what to put in each column
++schemaBLANK.csv - blank copy of the schema file
++schemaFileFish.csv - filled out schema file provided as an example
+
+NOTES:
+A geocoder needs to be manually created, as the code does not make one itself
+To run the code, right click on the file and choose "Edit with IDLE"
+After the file opens, click "Run" -> "Run Module"
+IDLE should have been installed with ArcMap. If not, the code can be ran from the command line

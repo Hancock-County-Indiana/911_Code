@@ -1,13 +1,11 @@
 """
 #Created by Amanda Roberts on 01/08/2021.
-#Last edited 02/05/2021
+#Last edited 04/28/2021
 #Code is using Python 2.7 and ArcMap 10.7
 #Status: Runs and produces expected result
 #
-#This code automates the fishbone analysis used by 911
-#Search "CHANGEME" to find blocks of code that may need file path updates
-#Highly recommended that forward slashes are used in file paths
-# to eliminate any Python weirdness with back slashes
+#This code automates the fishbone analysis used by 911 and takes in a 
+#schema file that contains the needed inputs
 """
 
 #import needed packages
@@ -16,45 +14,47 @@ from arcpy import env
 import pandas as pd
 import os
 
-#make the fishbone process a function so it can be called in other code
-def fishbone(address, centerlines, outLoc):
-    #make the address and centerline files feature layers so operations 
-    #  can be performed on them
-    addFC = "addressFC"
-    centerFC = "centerFC"
+#make the fishbone process a function so it can be called in other programs
+# address - the name of the address file without its extension
+# centerlines - the name of the centerlines file without its extension
+# schemaFile - the path to the schema file including its name and extension
+def fishbone(address, centerlines, schemaFile):
     
     #determine the coordinate system of the files
     env.outputCoordinateSystem = arcpy.Describe(address + ".shp").spatialReference
     
-    #run make feature layer so processes can be ran on them
+    #run make feature layer so processes can be performed on the files
+    addFC = "addressFC"
+    centerFC = "centerFC"
     arcpy.MakeFeatureLayer_management(address + ".shp", addFC)
     arcpy.MakeFeatureLayer_management(centerlines + ".shp", centerFC)
     print("Created address and centerlines feature layers")
     
-    #convert dbf of address to csv
+    #convert dbf of the address file to csv
     inTable = "addressFC.dbf"
     outTable = "addressdbfConvert1.csv"
+    outLoc = schemaFile.iloc[0, 2]
     arcpy.TableToTable_conversion(inTable, outLoc, outTable)
     print("Converted address dbf")
     
-    #remove the OID field that gets added from converting to csv 
+    #remove the OID field that sometimes gets added from converting to csv 
     os.chdir(outLoc)
     df = pd.read_csv(outTable, delimiter = ",")
+    outCSV = schemaFile.iloc[0, 5]
     try:
         df = df.drop("OID", axis = 1)
     except: 
         print("OID does not exist in the table")
-    #CHANGEME to where you want the output to go
-    df.to_csv("C:/Users/aroberts/Documents/Code/dummy_data/fishbone/geocodeTable.csv")
+    df.to_csv(outLoc + "/" + outCSV)
     print("Created csv file")
     
     #geocode the csv file using a premade address locator
-    #CHANGEME to the location of your premade address locator
-    addressLocator = "C:/Users/aroberts/Documents/Code/dummy_data/fishbone/manualLoc"
-    addressFields = "Street FULL_ADDRE;ZIP PROP_ZIP"
+    addressField = schemaFile.iloc[0, 6]
+    zipField = schemaFile.iloc[0, 7]
+    addressLocator = schemaFile.iloc[0, 8]
+    addressFields = "Street " + addressField + ";ZIP " + zipField
     geocodeResult = "geocodeResult1"
-    
-    arcpy.GeocodeAddresses_geocoding("geocodeTable.csv", addressLocator, addressFields, geocodeResult)
+    arcpy.GeocodeAddresses_geocoding(outCSV, addressLocator, addressFields, geocodeResult)
     print("Finished geocoding")
     
     #repair geometry on the addresses in the geocode output file
@@ -68,10 +68,9 @@ def fishbone(address, centerlines, outLoc):
     print("Created new file with the repaired geometry")
     
     #check for scores that aren't 100
-    #CHANGEME to the location of the output and repairResult1.shp
-    fc = "C:/Users/aroberts/Documents/Code/dummy_data/fishbone/repairResult1.shp"
-    fields = ["Score", "FID"]
-    expression = "Score < 100"
+    fc = outputLoc + "/" + repairResult + ".shp"
+    fields = ["Score", "FID"] 
+    expression = "Score < 100" 
     unmatchValues = arcpy.da.UpdateCursor(fc, fields, expression)
     for record in unmatchValues:
         print("Record number " + str(record[1]) + " has a match score of " + str(record[0]))
@@ -96,8 +95,12 @@ def fishbone(address, centerlines, outLoc):
     arcpy.CalculateField_management(addFC, "NewYField2", "!shape.extent.YMax!", "PYTHON_9.3")
     
     #calculate join to equal the full address and zip code 
-    arcpy.CalculateField_management(repairResult, "JoinField1", '!StAddr! + " " + !ZIP!', "PYTHON_9.3")
-    arcpy.CalculateField_management(addFC, "JoinField2", '!FULL_ADDRE! + " " + !PROP_ZIP!', "PYTHON_9.3")
+    repairAddress = schemaFile.iloc[0, 9]
+    repairZipcode = schemaFile.iloc[0, 10]
+    expression1 = '!' + str(repairAddress) + '! + " " + !' + str(repairZipcode) + '!'
+    expression2 = '!' + str(addressField) + '! + " " + !' + str(zipField) + '!'
+    arcpy.CalculateField_management(repairResult, "JoinField1", expression1, "PYTHON_9.3")
+    arcpy.CalculateField_management(addFC, "JoinField2", expression2, "PYTHON_9.3")
     
     print("Calculated fields")
     
@@ -112,7 +115,7 @@ def fishbone(address, centerlines, outLoc):
     arcpy.XYToLine_management("joinFile1.dbf", "outFish", "NewXField1", "NewYField1", "NewXField2", "NewYField2")
     print("XY to Line is complete")
     
-    #delete temporary files
+    #delete temporary files; check for problems
     arcpy.Delete_management("centerEDIT.shp")
     arcpy.Delete_management("addressdbfConvert1.csv")
     arcpy.Delete_management("geocodeTable.csv")
@@ -122,38 +125,41 @@ def fishbone(address, centerlines, outLoc):
     arcpy.Delete_management("joinFile1.shp")
     
     return
-    
-#set up environment and local files
-#CHANGEME to the location of your address points
-env.workspace = "C:/Users/aroberts/AppData/Roaming/ESRI/Desktop10.7/"  + \
-                "ArcCatalog/gis-01.annex.hancock.sde/sde.DBO.Staging"
+
+#read in values from the schema file that are needed before the function is called   
+schemaLoc = raw_input("Please enter the path to the schema file including its extension: ")
+schemaLoc = schemaLoc.replace("\\", "/")
+schemaIn = pd.read_csv(schemaLoc)
+dataLoc = schemaIn.iloc[0, 0]
+addrPoints = schemaIn.iloc[0, 1]
+outputLoc = schemaIn.iloc[0, 2]
+centerPath = schemaIn.iloc[0, 3]
+centerFile = schemaIn.iloc[0, 4]
+
+#set the environment to the location of the address points
+env.workspace = dataLoc
 env.overwriteOutput = True
 
-#get addresses and centerlines off the database
-#CHANGEME if address points have a different name
-inFeature = "sde.DBO.Hancock_Address_Points"
-#CHANGEME to the location of where the output should go
-outLocation = "C:/Users/aroberts/Documents/Code/dummy_data/fishbone"
-arcpy.FeatureClassToFeatureClass_conversion(inFeature, outLocation, "addressEDIT")
+#export the file to a local location
+arcpy.FeatureClassToFeatureClass_conversion(addrPoints, outputLoc, "addressEDIT")
 print("Exported address points to local location")
 
-#CHANGEME and uncomment if centerlines are in a different location
-#env.workspace = "C:/Users/jmilburn/AppData/Roaming/ESRI/Desktop10.7/"  + \
-#                "ArcCatalog/gis-01.annex.hancock.sde/sde.DBO.Staging"
-#CHANGEME if centerlines have a different name
-inFeature2 = "sde.DBO.Hancock_Centerlines"
-arcpy.FeatureClassToFeatureClass_conversion(inFeature2, outLocation, "centerEDIT")
+#set the environment to the location of the centerline file
+env.workspace = centerPath
+env.overwriteOutput = True
+
+#export the file to a local location
+arcpy.FeatureClassToFeatureClass_conversion(centerFile, outputLoc, "centerEDIT")
 print("Exported centerlines to local location")
 
 #Change the environment to the local location, allow overwriting,
 #and have the joined fields not include the table name
-#CHANGEME to the output location specified in outLocation
-env.workspace = "C:/Users/aroberts/Documents/Code/dummy_data/fishbone"
+env.workspace = outputLoc
 env.overwriteOutput = True
 env.qualifiedFieldNames = False
 
 #run the fishbone analysis
-fishbone("addressEDIT", "centerEDIT", outLocation)
+fishbone("addressEDIT", "centerEDIT", schemaIn)
 
 print("Exiting program")
 

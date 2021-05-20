@@ -1,0 +1,11 @@
+﻿,Col1,Col2,Col3,Col4,Col5,Col6,Col7,Col8,Col9,Col10,Col11,Col12,Col13
+msagLoc,C:\Users\aroberts\Documents\work_assign,MsagLimitedQueryResults.xls,,,,,,,,,,,
+outputLoc,C:\Users\aroberts\Documents\Code\dummy_data\MSAG,,,,,,,,,,,,
+zipLoc,C:\Users\aroberts\Documents\Code\911auto,INzips.csv,,,,,,,,,,,
+expectedField,TenantId,IsRecordActive,State,LastModified,StreetName,HouseNumLow,HouseNumHigh,Community,StreetSuffix,PrefixDirectional,PostDirectional,Zip,GUID
+actualField,,,State,Last_Updat,Street,Low,High,Community,,Dir,,,
+removeColumn,,,X,,,,,,,,,,
+rowValue,,,,,,0,0,,,,,,
+keepValue,,,,,,FALSE,FALSE,,,,,,
+joinField,,,,X,,,,,,,,,
+addressLocator,C:/Users/aroberts/Documents/Code/dummy_data/fishbone/manualLoc,,,,,,,,,,,,

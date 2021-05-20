@@ -1,0 +1,2 @@
+﻿AddrPath,AddressFile,OutputLoc,CenterPath,CenterlineFile,outputCSV,addAddr,addZip,addrLoc,repairAddr,repairZip
+C:/Users/aroberts/AppData/Roaming/ESRI/Desktop10.7/ArcCatalog/gis-01.annex.hancock.sde/sde.DBO.Staging,sde.DBO.Hancock_Address_Points,C:/Users/aroberts/Documents/Code/dummy_data/fishbone,C:/Users/aroberts/AppData/Roaming/ESRI/Desktop10.7/ArcCatalog/gis-01.annex.hancock.sde/sde.DBO.Staging,sde.DBO.Hancock_Centerlines,geocodeTable.csv,FULL_ADDRE,PROP_ZIP,C:/Users/aroberts/Documents/Code/dummy_data/fishbone/manualLoc,StAddr,ZIP

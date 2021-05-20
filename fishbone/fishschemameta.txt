@@ -1,0 +1,14 @@
+AddrPath - path to the folder the address points is in
+AddressFile - name of the address points file NO EXTENSION
+OutputLoc - path to the folder where the output files will go
+CenterPath - path to the folder where the centerlines file is
+CenterlineFile - name of the centerlines file NO EXTENSION
+outputCSV - name and extension of the csv file that will be 
+	    created for geocoding
+addAddr - name of the address field in the address points file
+addZip - name of the zip field in the address points file
+addrLoc - path to the address locator along with its name
+repairAddr - the name of the address field in the repaired file;
+             leave as is unless there's an error
+repairZip - the name of the zip code field in the repaired file;
+            leave as is unless there is an error

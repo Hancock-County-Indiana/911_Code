@@ -1,0 +1,22 @@
+~~~~~~~~~~~~LAST UPDATED 05/20/2021 (MAY 20)~~~~~~~~~~~~~
+FILES
++centerlineMSAGdynamic.py
++INzips.csv
++schemaBLANK.csv
++schemaMeta.txt
++schemaTemplate1.csv
+
+DESCRIPTIONS
+
+FILES
++centerlineMSAGdynamic.py - file containing code for the MSAG Centerline Reconciliation process
++INzips.csv - file with zip codes for most towns in Indiana
++schemaBLANK.csv - template for the schema file
++schemaMeta.txt - metadata file explaining each row in the schema file
++schemaTemplate1.csv - schema file filled out that is provided as an example
+
+NOTES:
+A geocoder needs to be manually created, as the code does not make one itself
+To run the code, right click on the file and choose "Edit with IDLE"
+After the file opens, click "Run" -> "Run Module"
+IDLE should have been installed with ArcMap. If not, the code can be ran from the command line

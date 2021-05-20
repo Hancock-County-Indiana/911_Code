@@ -1,0 +1,18 @@
+Row 1 - column headers so the function to read the schema in doesn't get confused
+msagLoc - Col1 is the path to the folder the msag table is in;
+          Col2 is for the name of the msag file with its extension
+outputLoc - Col1 should include path to the folder where the output should go
+zipLoc - Col1 is the path to the folder the zip table is in;
+	 Col2 is for the name of the zip code file with its extension
+gdbLoc - Col1 is the path to where the gdb is including its extension; think this can be deleted
+ExpectedField - DO NOT CHANGE; needed to have code work
+ActualField - Enter the field name in your table that corresponds to the ExpectedField;
+	      If there isn't one, leave the cell blank
+RemoveColumn - Put an "X" in the column that will need to be deleted 
+RowValue - If a column needs specific records deleted, enter the value to be 
+	   deleted in the appropriate column
+KeepValue - If records containing the RowValue should be kept, put an "X" in 
+	    the corresponding column
+JoinField - Put an "X" in the column that should be used to join two tables 
+	    created later on in the process
+addressLocator - enter the path to the address locator and its name
