@@ -1,0 +1,11 @@
+﻿,Col1,Col2,Col3,Col4,Col5,Col6,Col7,Col8,Col9,Col10,Col11,Col12,Col13
+msagLoc,,,,,,,,,,,,,
+outputLoc,,,,,,,,,,,,,
+zipLoc,,,,,,,,,,,,,
+ExpectedField,TenantId,IsRecordActive,State,LastModified,StreetName,HouseNumLow,HouseNumHigh,Community,StreetSuffix,PrefixDirectional,PostDirectional,Zip,GUID
+ActualField,,,,,,,,,,,,,
+RemoveColumn,,,,,,,,,,,,,
+RowValue,,,,,,,,,,,,,
+KeepValue,,,,,,,,,,,,,
+JoinField,,,,,,,,,,,,,
+addressLocator,,,,,,,,,,,,,
